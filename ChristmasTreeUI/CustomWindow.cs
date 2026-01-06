@@ -144,6 +144,18 @@ class CustomWindow : IDisposable
       IntPtr brushHandleIn
     );
 
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern bool InvalidateRect(
+      IntPtr hWnd,
+      IntPtr rectPtrIn,
+      bool erase
+    );
+
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern bool UpdateWindow(
+      IntPtr hWnd
+    );
+
     private const int ERROR_CLASS_ALREADY_EXISTS = 1410;
 
     private bool disposed;
@@ -282,6 +294,11 @@ class CustomWindow : IDisposable
             default:
                 return DefWindowProcW(hWnd, msg, wParam, lParam);
         }
+    }
+
+    public void Repaint()
+    {
+        InvalidateRect(m_hwnd, 0, true);
     }
 
     private WndProc m_wnd_proc_delegate;
