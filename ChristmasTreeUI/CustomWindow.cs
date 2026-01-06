@@ -2,11 +2,11 @@
 // Posted by morechilli, modified by community. See post 'Timeline' for change history
 // Retrieved 2025-12-09, License - CC BY-SA 3.0
 
-using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace ChristmasTreeUI;
+
+public delegate void OnPaint(IntPtr hdc);
 
 class CustomWindow : IDisposable
 {
@@ -163,6 +163,8 @@ class CustomWindow : IDisposable
 
     private IntPtr msgPtr = IntPtr.Zero;
 
+    public static event OnPaint? OnPaint;
+
     public void Dispose()
     {
         Dispose(true);
@@ -274,6 +276,8 @@ class CustomWindow : IDisposable
 
                     // We need to add 1 to the colour enum value because the enum starts at 0 which is otherwise indistinguishable from IntPtr.Zero / Win32 NULL
                     FillRect(hdc, rectPtr, (IntPtr)(COLOR.COLOR_WINDOW + 1));
+
+                    OnPaint?.Invoke(hdc);
 
                     EndPaint(hWnd, psPtr);
                     return 0;
