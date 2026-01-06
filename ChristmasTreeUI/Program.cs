@@ -26,3 +26,12 @@ void CustomWindow_OnPaint(IntPtr hdc)
 
 win.Loop();
 signal.Set();
+
+/*
+0: draw a line segment ending in a leaf
+1: draw a line segment
+[: push position and angle, turn left 45 degrees
+]: pop position and angle, turn right 45 degrees
+axiom  : 0
+rules  : (1 → 11), (0 → 1[0]0)
+*/
