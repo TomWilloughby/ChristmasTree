@@ -7,12 +7,21 @@ var line = new Line(50, 50, 250, 250, 10_000);
 
 var task = Task.Run(() =>
 {
-    CustomWindow.OnPaint += CustomWindow_OnPaint;
-    line.StartAnimation();
-    win.Repaint();
-    signal.WaitOne();
-    CustomWindow.OnPaint -= CustomWindow_OnPaint;
+    try
+    {
+        CustomWindow.OnPaint += CustomWindow_OnPaint;
+        line.StartAnimation();
+        win.Repaint();
+        signal.WaitOne();
+        CustomWindow.OnPaint -= CustomWindow_OnPaint;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+        throw;
+    }
 });
+
 
 void CustomWindow_OnPaint(IntPtr hdc)
 {
@@ -24,7 +33,15 @@ void CustomWindow_OnPaint(IntPtr hdc)
     }
 }
 
-win.Loop();
+try
+{
+    win.Loop();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.ToString());
+    throw;
+}
 signal.Set();
 
 /*

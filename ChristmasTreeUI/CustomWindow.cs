@@ -250,53 +250,61 @@ class CustomWindow : IDisposable
 
     private static IntPtr CustomWndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
     {
-        switch ((WINDOWS_MESSAGE)msg)
+        try
         {
-            case WINDOWS_MESSAGE.WM_DESTROY:
-                PostQuitMessage(0);
-                return 0;
-            case WINDOWS_MESSAGE.WM_CLOSE:
-                DestroyWindow(hWnd);
-                return 0;
-            case WINDOWS_MESSAGE.WM_PAINT:
+            switch ((WINDOWS_MESSAGE)msg)
             {
-                PAINTSTRUCT ps = new();
-                var psPtr = IntPtr.Zero;
-                var rectPtr = IntPtr.Zero;
-
-                try
-                {
-                    psPtr = Marshal.AllocHGlobal(Marshal.SizeOf(ps));
-                    Marshal.StructureToPtr(ps, psPtr, true);
-                    var hdc = BeginPaint(hWnd, psPtr);
-
-                    // All painting occurs here, between BeginPaint and EndPaint.
-                    rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(ps.rcPaint));
-                    Marshal.StructureToPtr(ps.rcPaint, rectPtr, true);
-
-                    // We need to add 1 to the colour enum value because the enum starts at 0 which is otherwise indistinguishable from IntPtr.Zero / Win32 NULL
-                    FillRect(hdc, rectPtr, (IntPtr)(COLOR.COLOR_WINDOW + 1));
-
-                    OnPaint?.Invoke(hdc);
-
-                    EndPaint(hWnd, psPtr);
+                case WINDOWS_MESSAGE.WM_DESTROY:
+                    PostQuitMessage(0);
                     return 0;
-                }
-                finally
-                {
-                    if (rectPtr != IntPtr.Zero)
+                case WINDOWS_MESSAGE.WM_CLOSE:
+                    DestroyWindow(hWnd);
+                    return 0;
+                case WINDOWS_MESSAGE.WM_PAINT:
                     {
-                        Marshal.FreeHGlobal(rectPtr);
-                    }
+                        PAINTSTRUCT ps = new();
+                        var psPtr = IntPtr.Zero;
+                        var rectPtr = IntPtr.Zero;
 
-                    if (psPtr != IntPtr.Zero)
-                    {
-                        Marshal.FreeHGlobal(psPtr);
+                        try
+                        {
+                            psPtr = Marshal.AllocHGlobal(Marshal.SizeOf(ps));
+                            Marshal.StructureToPtr(ps, psPtr, true);
+                            var hdc = BeginPaint(hWnd, psPtr);
+
+                            // All painting occurs here, between BeginPaint and EndPaint.
+                            rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(ps.rcPaint));
+                            Marshal.StructureToPtr(ps.rcPaint, rectPtr, true);
+
+                            // We need to add 1 to the colour enum value because the enum starts at 0 which is otherwise indistinguishable from IntPtr.Zero / Win32 NULL
+                            FillRect(hdc, rectPtr, (IntPtr)(COLOR.COLOR_WINDOW + 1));
+
+                            OnPaint?.Invoke(hdc);
+
+                            EndPaint(hWnd, psPtr);
+                            return 0;
+                        }
+                        finally
+                        {
+                            if (rectPtr != IntPtr.Zero)
+                            {
+                                Marshal.FreeHGlobal(rectPtr);
+                            }
+
+                            if (psPtr != IntPtr.Zero)
+                            {
+                                Marshal.FreeHGlobal(psPtr);
+                            }
+                        }
                     }
-                }
+                default:
+                    return DefWindowProcW(hWnd, msg, wParam, lParam);
             }
-            default:
-                return DefWindowProcW(hWnd, msg, wParam, lParam);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
         }
     }
 
