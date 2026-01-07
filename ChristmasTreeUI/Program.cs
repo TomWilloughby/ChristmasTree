@@ -27,7 +27,7 @@ var task = Task.Run(() =>
                 }
             }
 
-            int x = 500, y = 0, angle = 0;
+            int x = 500, y = 500, angle = 0;
             var positions = new Stack<(int, int, int)>();
             allLines.Clear();
             Line? nextLine = null;
@@ -118,14 +118,14 @@ Line Draw(int startX, int startY, int angle, bool isLeaf)
 
     return angle switch
     {
-        0 => (x, y + lineLength),// line go up
-        45 => (x + angledLength, y + angledLength),// line go up & right
+        0 => (x, y - lineLength),// line go up
+        45 => (x + angledLength, y - angledLength),// line go up & right
         90 => (x + lineLength, y),// line go right
-        135 => (x + angledLength, y - angledLength),// line go down & right
-        180 => (x, y - lineLength),// line go down
-        225 => (x - angledLength, y - angledLength),// line go down & left
+        135 => (x + angledLength, y + angledLength),// line go down & right
+        180 => (x, y + lineLength),// line go down
+        225 => (x - angledLength, y + angledLength),// line go down & left
         270 => (x - lineLength, y),// line go left
-        315 => (x - angledLength, y + angledLength),// line go up & left
+        315 => (x - angledLength, y - angledLength),// line go up & left
         _ => throw new NotImplementedException($"Angles that aren't multiples of 45 degrees aren't supported (trying to calculate line for angle {angle})."),
     };
 }
