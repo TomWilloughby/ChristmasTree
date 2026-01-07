@@ -6,15 +6,18 @@ internal class Line
 {
     public bool IsAnimating { get; private set; } = false;
 
-    private readonly int StartX;
-    private readonly int StartY;
-    private readonly int EndX;
-    private readonly int EndY;
+    public int StartX { get; init; }
+    public int StartY { get; init; }
+    public int EndX { get; init; }
+    public int EndY { get; init; }
+
     private readonly int DurationTicks;
 
     private long startTick = 0;
     private readonly double XPerTick;
     private readonly double YPerTick;
+
+    public event Action? OnAnimationComplete;
 
     public Line(int startX, int startY, int endX, int endY, int durationMs)
     {
@@ -36,6 +39,8 @@ internal class Line
 
     public void Draw(IntPtr hdc)
     {
+        var wasAnimating = IsAnimating;
+
         var elapsedTicks = IsAnimating ? DateTime.Now.Ticks - startTick : 0;
         IsAnimating = IsAnimating && elapsedTicks < DurationTicks;
 
@@ -59,6 +64,12 @@ internal class Line
                 {
                     ThrowLastError("Could not draw completed line");
                 }
+
+                if (wasAnimating)
+                {
+                    OnAnimationComplete?.Invoke();
+                }
+
                 return;
             }
 
