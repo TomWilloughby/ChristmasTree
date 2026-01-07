@@ -1,16 +1,21 @@
 ﻿using ChristmasTreeUI;
 
+var rnd = new Random();
 var signal = new AutoResetEvent(false);
 
 using var win = new CustomWindow("Hello World");
-var line = new Line(50, 50, 250, 250, 10_000);
+
+var allLines = new List<Line>();
+var currentLine = new Line(50, 50, 250, 250, 5_000);
+allLines.Add(currentLine);
 
 var task = Task.Run(() =>
 {
     try
     {
         CustomWindow.OnPaint += CustomWindow_OnPaint;
-        line.StartAnimation();
+        currentLine.OnAnimationComplete += Line_OnAnimationComplete;
+        currentLine.StartAnimation();
         win.Repaint();
         signal.WaitOne();
         CustomWindow.OnPaint -= CustomWindow_OnPaint;
@@ -22,12 +27,41 @@ var task = Task.Run(() =>
     }
 });
 
+void Line_OnAnimationComplete()
+{
+    try
+    {
+        currentLine.OnAnimationComplete -= Line_OnAnimationComplete;
+        var replacementLine = new Line(currentLine.EndX, currentLine.EndY, rnd.Next(0, 500), rnd.Next(0, 500), 5_000);
+        replacementLine.OnAnimationComplete += Line_OnAnimationComplete;
+        replacementLine.StartAnimation();
+        allLines.Add(replacementLine);
+        currentLine = replacementLine;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+        throw;
+    }
+}
 
 void CustomWindow_OnPaint(IntPtr hdc)
 {
-    line.Draw(hdc);
+    var lines = new List<Line>(allLines);
+    foreach (var line in lines)
+    {
+        try
+        {
+            line.Draw(hdc);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            throw;
+        }
+    }
 
-    if (line.IsAnimating)
+    if (currentLine.IsAnimating)
     {
         win.Repaint();
     }
