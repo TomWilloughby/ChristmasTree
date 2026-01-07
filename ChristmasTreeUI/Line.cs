@@ -19,6 +19,7 @@ internal class Line
     private readonly int Colour;
 
     public event Action? OnAnimationComplete;
+    public readonly ManualResetEvent AnimationEndSignal = new ManualResetEvent(true);
 
     public Line(int startX, int startY, int endX, int endY, int durationMs, int r, int g, int b)
     {
@@ -36,8 +37,14 @@ internal class Line
 
     public void StartAnimation()
     {
+        AnimationEndSignal.Reset();
         IsAnimating = true;
         startTick = DateTime.Now.Ticks;
+    }
+
+    public void WaitForAnimationEnd()
+    {
+        AnimationEndSignal.WaitOne();
     }
 
     public void Draw(IntPtr hdc)
@@ -70,6 +77,7 @@ internal class Line
 
                 if (wasAnimating)
                 {
+                    AnimationEndSignal.Set();
                     OnAnimationComplete?.Invoke();
                 }
 
