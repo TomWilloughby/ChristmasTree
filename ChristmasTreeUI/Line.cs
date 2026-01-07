@@ -16,10 +16,11 @@ internal class Line
     private long startTick = 0;
     private readonly double XPerTick;
     private readonly double YPerTick;
+    private readonly int Colour;
 
     public event Action? OnAnimationComplete;
 
-    public Line(int startX, int startY, int endX, int endY, int durationMs)
+    public Line(int startX, int startY, int endX, int endY, int durationMs, int r, int g, int b)
     {
         StartX = startX;
         StartY = startY;
@@ -29,6 +30,8 @@ internal class Line
 
         XPerTick = (double)(endX - startX) / (double)DurationTicks;
         YPerTick = (double)(endY - startY) / (double)DurationTicks;
+
+        Colour = RGB(r, g, b);
     }
 
     public void StartAnimation()
@@ -50,7 +53,7 @@ internal class Line
 
         try
         {
-            hPen = SetDCPenColor(hdc, RGB(0, 0, 255));
+            hPen = SetDCPenColor(hdc, Colour);
 
             var moved = MoveToEx(hdc, StartX, StartY, IntPtr.Zero);
             if (!moved)
@@ -155,7 +158,7 @@ internal class Line
         public IntPtr lbHatch;
     }
 
-    private IntPtr SetDCPenColor(IntPtr hdc, int color, int width = 20)
+    private IntPtr SetDCPenColor(IntPtr hdc, int color, int width = 5)
     {
         // Create a new LOGBRUSH structure with the desired color (RGB: 0, 0, 255 - blue)
         //var lb = new LOGBRUSH();
