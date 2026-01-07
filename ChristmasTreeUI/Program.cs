@@ -87,7 +87,7 @@ var task = Task.Run(() =>
 Line Draw(int startX, int startY, int angle, bool isLeaf)
 {
     var lineLength = isLeaf ? 10 : 50;
-    var (endX, endY) = CalculateEndPosition(startX, startX, angle, lineLength);
+    var (endX, endY) = CalculateEndPosition(startX, startY, angle, lineLength);
     int r = 0, g = 0, b = 0;
 
     if (isLeaf)
