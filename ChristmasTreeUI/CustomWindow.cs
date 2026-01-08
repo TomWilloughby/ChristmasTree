@@ -204,6 +204,7 @@ class CustomWindow : IDisposable
         WNDCLASS wind_class = new WNDCLASS();
         wind_class.lpszClassName = class_name;
         wind_class.lpfnWndProc = Marshal.GetFunctionPointerForDelegate(m_wnd_proc_delegate);
+        wind_class.hbrBackground = (IntPtr)(COLOR.COLOR_WINDOW + 1);
 
         UInt16 class_atom = RegisterClassW(ref wind_class);
 
