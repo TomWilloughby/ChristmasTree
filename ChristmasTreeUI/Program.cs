@@ -51,7 +51,11 @@ var task = Task.Run(() =>
                         break;
                     case ']':
                         // pop position and angle, turn right 45 degrees
-                        (x, y, angle) = positions.Pop();
+                        if (positions.Count > 0)
+                        {
+                            (x, y, angle) = positions.Pop();
+                        }
+
                         angle += 45;
                         break;
                 }
