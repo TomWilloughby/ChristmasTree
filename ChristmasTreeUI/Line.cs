@@ -19,7 +19,7 @@ internal class Line
     private readonly int Colour;
 
     public event Action? OnAnimationComplete;
-    public readonly ManualResetEvent AnimationEndSignal = new ManualResetEvent(true);
+    public readonly ManualResetEvent AnimationEndSignal = new(true);
 
     public Line(int startX, int startY, int endX, int endY, int durationMs, int r, int g, int b)
     {
@@ -166,7 +166,7 @@ internal class Line
         public IntPtr lbHatch;
     }
 
-    private IntPtr SetDCPenColor(IntPtr hdc, int color, int width = 5)
+    private static IntPtr SetDCPenColor(IntPtr hdc, int color, int width = 5)
     {
         // Create a new LOGBRUSH structure with the desired color (RGB: 0, 0, 255 - blue)
         //var lb = new LOGBRUSH();

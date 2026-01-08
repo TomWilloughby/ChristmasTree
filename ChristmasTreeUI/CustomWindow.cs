@@ -191,6 +191,7 @@ class CustomWindow : IDisposable
                 m_hwnd = IntPtr.Zero;
             }
 
+            disposed = true;
         }
     }
 
@@ -201,10 +202,12 @@ class CustomWindow : IDisposable
         m_wnd_proc_delegate = CustomWndProc;
 
         // Create WNDCLASS
-        WNDCLASS wind_class = new WNDCLASS();
-        wind_class.lpszClassName = class_name;
-        wind_class.lpfnWndProc = Marshal.GetFunctionPointerForDelegate(m_wnd_proc_delegate);
-        wind_class.hbrBackground = (IntPtr)(COLOR.COLOR_WINDOW + 1);
+        WNDCLASS wind_class = new()
+        {
+            lpszClassName = class_name,
+            lpfnWndProc = Marshal.GetFunctionPointerForDelegate(m_wnd_proc_delegate),
+            hbrBackground = (IntPtr)(COLOR.COLOR_WINDOW + 1)
+        };
 
         UInt16 class_atom = RegisterClassW(ref wind_class);
 
@@ -278,7 +281,7 @@ class CustomWindow : IDisposable
                             Marshal.StructureToPtr(ps.rcPaint, rectPtr, true);
 
                             // We need to add 1 to the colour enum value because the enum starts at 0 which is otherwise indistinguishable from IntPtr.Zero / Win32 NULL
-                            FillRect(hdc, rectPtr, (IntPtr)(COLOR.COLOR_WINDOW + 1));
+                            var _ = FillRect(hdc, rectPtr, (IntPtr)(COLOR.COLOR_WINDOW + 1));
 
                             OnPaint?.Invoke(hdc);
 
@@ -319,7 +322,7 @@ class CustomWindow : IDisposable
         InvalidateRect(m_hwnd, IntPtr.Zero, true);
     }
 
-    private WndProc m_wnd_proc_delegate;
+    private readonly WndProc m_wnd_proc_delegate;
 
     const int CW_USEDEFAULT = (unchecked((int)0x80000000));
 
@@ -328,7 +331,7 @@ class CustomWindow : IDisposable
         WS_BORDER = 0x00800000,          //  The window has a thin-line border
         WS_CAPTION = 0x00C00000,          //  The window has a title bar (includes the WS_BORDER style).
         WS_CHILD = 0x40000000,            //  The window is a child window. A window with this style cannot have a menu bar. This style cannot be used with the WS_POPUP style.
-        WS_CHILDWINDOW = 0x40000000,        //  Same as the WS_CHILD style.
+        WS_CHILDWINDOW = WS_CHILD,        //  Same as the WS_CHILD style.
         WS_CLIPCHILDREN = 0x02000000,        //  Excludes the area occupied by child windows when drawing occurs within the parent window. This style is used when creating the parent window.
         WS_CLIPSIBLINGS = 0x04000000,        //  Clips child windows relative to each other; that is, when a particular child window receives a WM_PAINT message, the WS_CLIPSIBLINGS style clips all other overlapping child windows out of the region of the child window to be updated. If WS_CLIPSIBLINGS is not specified and child windows overlap, it is possible, when drawing within the client area of a child window, to draw within the client area of a neighboring child window.
         WS_DISABLED = 0x08000000,          //  The window is initially disabled. A disabled window cannot receive input from the user. To change this after a window has been created, use the EnableWindow function.
@@ -338,20 +341,20 @@ class CustomWindow : IDisposable
         WS_ICONIC = 0x20000000,          //  The window is initially minimized. Same as the WS_MINIMIZE style.
         WS_MAXIMIZE = 0x01000000,          //  The window is initially maximized.
         WS_MAXIMIZEBOX = 0x00010000,        //  The window has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.
-        WS_MINIMIZE = 0x20000000,          //  The window is initially minimized. Same as the WS_ICONIC style.
-        WS_MINIMIZEBOX = 0x00020000,        //  The window has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.
+        WS_MINIMIZE = WS_ICONIC,          //  The window is initially minimized. Same as the WS_ICONIC style.
+        WS_MINIMIZEBOX = WS_ICONIC,        //  The window has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.
         WS_OVERLAPPED = 0x00000000,        //  The window is an overlapped window. An overlapped window has a title bar and a border. Same as the WS_TILED style.
         WS_POPUP = 0x80000000,            //  The window is a pop-up window. This style cannot be used with the WS_CHILD style.
         WS_SIZEBOX = 0x00040000,          //  The window has a sizing border. Same as the WS_THICKFRAME style.
         WS_SYSMENU = 0x00080000,          //  The window has a window menu on its title bar. The WS_CAPTION style must also be specified.
-        WS_TABSTOP = 0x00010000,          //  The window is a control that can receive the keyboard focus when the user presses the TAB key. Pressing the TAB key changes the keyboard focus to the next control with the WS_TABSTOP style. You can turn this style on and off to change dialog box navigation. To change this style after a window has been created, use the SetWindowLong function. For user-created windows and modeless dialogs to work with tab stops, alter the message loop to call the IsDialogMessage function.
-        WS_THICKFRAME = 0x00040000,        //  The window has a sizing border. Same as the WS_SIZEBOX style.
-        WS_TILED = 0x00000000,            //  The window is an overlapped window. An overlapped window has a title bar and a border. Same as the WS_OVERLAPPED style.
+        WS_TABSTOP = WS_MAXIMIZEBOX,          //  The window is a control that can receive the keyboard focus when the user presses the TAB key. Pressing the TAB key changes the keyboard focus to the next control with the WS_TABSTOP style. You can turn this style on and off to change dialog box navigation. To change this style after a window has been created, use the SetWindowLong function. For user-created windows and modeless dialogs to work with tab stops, alter the message loop to call the IsDialogMessage function.
+        WS_THICKFRAME = WS_SIZEBOX,        //  The window has a sizing border. Same as the WS_SIZEBOX style.
+        WS_TILED = WS_OVERLAPPED,            //  The window is an overlapped window. An overlapped window has a title bar and a border. Same as the WS_OVERLAPPED style.
         WS_VISIBLE = 0x10000000,          //  The window is initially visible. This style can be turned on and off by using the ShowWindow or SetWindowPos function.
         WS_VSCROLL = 0x00200000,          //  The window has a vertical scroll bar.
         WS_OVERLAPPEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,  //  The window is an overlapped window. Same as the WS_TILEDWINDOW style.
         WS_POPUPWINDOW = WS_POPUP | WS_BORDER | WS_SYSMENU,  //  The window is a pop-up window. The WS_CAPTION and WS_POPUPWINDOW styles must be combined to make the window menu visible.
-        WS_TILEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,  //  The window is an overlapped window. Same as the WS_OVERLAPPEDWINDOW style.
+        WS_TILEDWINDOW = WS_OVERLAPPEDWINDOW,  //  The window is an overlapped window. Same as the WS_OVERLAPPEDWINDOW style.
     }
 
     enum SHOW_WINDOW
@@ -379,14 +382,6 @@ class CustomWindow : IDisposable
 
     enum COLOR
     {
-        CTLCOLOR_MSGBOX = 0,
-        CTLCOLOR_EDIT = 1,
-        CTLCOLOR_LISTBOX = 2,
-        CTLCOLOR_BTN = 3,
-        CTLCOLOR_DLG = 4,
-        CTLCOLOR_SCROLLBAR = 5,
-        CTLCOLOR_STATIC = 6,
-        CTLCOLOR_MAX = 7,
         COLOR_SCROLLBAR = 0,
         COLOR_BACKGROUND = 1,
         COLOR_ACTIVECAPTION = 2,
@@ -395,6 +390,14 @@ class CustomWindow : IDisposable
         COLOR_WINDOW = 5,
         COLOR_WINDOWFRAME = 6,
         COLOR_MENUTEXT = 7,
+        CTLCOLOR_MSGBOX = COLOR_SCROLLBAR,
+        CTLCOLOR_EDIT = COLOR_BACKGROUND,
+        CTLCOLOR_LISTBOX = COLOR_ACTIVECAPTION,
+        CTLCOLOR_BTN = COLOR_INACTIVECAPTION,
+        CTLCOLOR_DLG = COLOR_MENU,
+        CTLCOLOR_SCROLLBAR = COLOR_WINDOW,
+        CTLCOLOR_STATIC = COLOR_WINDOWFRAME,
+        CTLCOLOR_MAX = COLOR_MENUTEXT,
         COLOR_WINDOWTEXT = 8,
         COLOR_CAPTIONTEXT = 9,
         COLOR_ACTIVEBORDER = 10,
