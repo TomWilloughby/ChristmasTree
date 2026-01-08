@@ -87,25 +87,30 @@ var task = Task.Run(() =>
 
 Line Draw(int startX, int startY, int angle, bool isLeaf)
 {
-    var lineLength = isLeaf ? 10 : 50;
-    var (endX, endY) = CalculateEndPosition(startX, startY, angle, lineLength);
-    int r = 0, g = 0, b = 0;
+    int r = 0, g = 0, b = 0, lineLength, delay;
 
     if (isLeaf)
     {
         g = 255;
+        lineLength = 10;
+        delay = 400;
     }
     else
     {
         r = 105;
         g = 80;
+        lineLength = 50;
+        delay = 2_000;
     }
 
-    var line = new Line(startX, startY, endX, endY, 2_000, r, g, b);
+    var (endX, endY) = CalculateEndPosition(startX, startY, angle, lineLength);
+    var line = new Line(startX, startY, endX, endY, delay, r, g, b);
     allLines.Add(line);
+
     line.StartAnimation();
     win.TriggerPaint();
     line.WaitForAnimationEnd();
+
     return line;
 }
 
