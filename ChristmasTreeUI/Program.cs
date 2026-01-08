@@ -6,7 +6,7 @@ var complete = false;
 var completeLock = new object();
 
 // var system = new LSystem("0", new Dictionary<char, string>() { { '0', "1[0]0" }, { '1', "11" } });
-var system = new LSystem("2", new Dictionary<char, string>() { { '2', "1[[[0[[[00[[[0[[[[[[[2" } });
+var system = new LSystem("12", new Dictionary<char, string>() { { '2', "1[[[0[[[00[[[0[[[[[[[2" } });
 
 using var win = new CustomWindow("Hello World");
 
@@ -97,8 +97,10 @@ Line Draw(int startX, int startY, int angle, bool isLeaf)
     if (isLeaf)
     {
         g = 255;
-        lineLength = 10;
-        delay = 400;
+        //lineLength = 10;
+        //delay = 400;
+        lineLength = 70;
+        delay = 1_600;
     }
     else
     {
