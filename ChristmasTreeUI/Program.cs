@@ -118,8 +118,7 @@ Line Draw(int startX, int startY, int angle, bool isLeaf)
 /// It's assumed angle is a multiple of 45 degrees.
 (int, int) CalculateEndPosition(int x, int y, int angle, int lineLength)
 {
-    double rootTwo = Math.Sqrt(2);
-    var angledLength = (int)Math.Round(lineLength / rootTwo);
+    var angledLength = lineLength;
 
     return angle switch
     {
