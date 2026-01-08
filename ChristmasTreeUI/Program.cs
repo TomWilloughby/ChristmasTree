@@ -143,7 +143,8 @@ Line Draw(int startX, int startY, int angle, bool isLeaf)
 
 void CustomWindow_OnPaint(IntPtr hdc)
 {
-    var lines = new List<Line>(allLines);
+    var lines = allLines.Where(line => line.IsAnimating).ToList();
+
     foreach (var line in lines)
     {
         try
