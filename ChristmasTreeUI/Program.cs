@@ -30,6 +30,7 @@ var task = Task.Run(() =>
             int x = 500, y = 500, angle = 0;
             var positions = new Stack<(int, int, int)>();
             allLines.Clear();
+            win.Repaint();
             Line? nextLine = null;
 
             foreach (char symbol in system.Value)
@@ -103,11 +104,10 @@ Line Draw(int startX, int startY, int angle, bool isLeaf)
     var line = new Line(startX, startY, endX, endY, 2_000, r, g, b);
     allLines.Add(line);
     line.StartAnimation();
-    win.Repaint();
+    win.TriggerPaint();
     line.WaitForAnimationEnd();
     return line;
 }
-
 
 /// Calculate the end position of a line starting at x,y with a given angle and length.
 /// It's assumed angle is a multiple of 45 degrees.
@@ -148,7 +148,7 @@ void CustomWindow_OnPaint(IntPtr hdc)
 
     if (lines.Any(line => line.IsAnimating))
     {
-        win.Repaint();
+        win.TriggerPaint();
     }
 }
 

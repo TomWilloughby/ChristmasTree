@@ -309,9 +309,14 @@ class CustomWindow : IDisposable
         }
     }
 
+    public void TriggerPaint()
+    {
+        InvalidateRect(m_hwnd, IntPtr.Zero, false);
+    }
+
     public void Repaint()
     {
-        InvalidateRect(m_hwnd, 0, true);
+        InvalidateRect(m_hwnd, IntPtr.Zero, true);
     }
 
     private WndProc m_wnd_proc_delegate;
