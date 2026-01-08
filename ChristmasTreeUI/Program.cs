@@ -5,7 +5,8 @@ var rnd = new Random();
 var complete = false;
 var completeLock = new object();
 
-var system = new LSystem("0", new Dictionary<char, string>() { { '0', "1[0]0" }, { '1', "11" } });
+// var system = new LSystem("0", new Dictionary<char, string>() { { '0', "1[0]0" }, { '1', "11" } });
+var system = new LSystem("2", new Dictionary<char, string>() { { '2', "1[[[0[[[00[[[0[[[[[[[2" } });
 
 using var win = new CustomWindow("Hello World");
 
